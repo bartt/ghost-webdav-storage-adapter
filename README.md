@@ -1,4 +1,4 @@
-# WebDAV storage adapter for Ghost
+# WebDAV storage adapter for Ghost [![Build Status](https://travis-ci.org/bartt/ghost-webdav-storage-adapter.svg?branch=master)](https://travis-ci.org/bartt/ghost-webdav-storage-adapter)
 
 A WebDAV storage adapter for the [Ghost](https://ghost.org/) publishing platform 1.x
 
