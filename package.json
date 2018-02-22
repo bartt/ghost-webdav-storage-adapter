@@ -1,0 +1,59 @@
+{
+  "name": "ghost-webdav-storage-adapter",
+  "version": "0.1.0",
+  "description": "A WebDAV storage adapter for the Ghost publishing platform",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "babel ./src/index.js --out-file ./dist/index.js",
+    "lint": "eslint ./src",
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartt/ghost-webdav-storage-adapter.git"
+  },
+  "keywords": [
+    "adapter",
+    "ghost",
+    "storage",
+    "webdav"
+  ],
+  "author": {
+    "name": "Bart Teeuwisse",
+    "email": "bart@thecodemill.biz",
+    "url": "https://thecodemill.biz"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bartt/ghost-webdav-storage-adapter/issues"
+  },
+  "homepage": "https://github.com/bartt/ghost-webdav-storage-adapter#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "ghost-storage-base": "0.0.1",
+    "webdav": "^1.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  },
+  "babel": {
+    "plugins": [],
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "4.5"
+          },
+          "exclude": [
+            "transform-es2015-classes"
+          ]
+        }
+      ]
+    ]
+  },
+  "engines": {
+    "node": ">=4.5"
+  }
+}
