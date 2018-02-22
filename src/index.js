@@ -5,6 +5,7 @@ const Promise = require('bluebird');
 const createClient = require('webdav');
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
 /**
  * @typedef {Object} Config Ghost storage adapter configuration object.
@@ -30,10 +31,10 @@ class WebDavAdapter extends BaseAdapter {
    * Create a WebDAV adapter
    * @param {Config} config
    */
-  constructor(config = {}) {
+  constructor (config = {}) {
     super(config);
     if (!config.url && !process.env.WEBDAV_SERVER_URL) {
-      throw new Error('A URL to the WebDAV server is required.')
+      throw new Error('A URL to the WebDAV server is required.');
     }
     this.client = createClient(
       config.url || process.env.WEBDAV_SERVER_URL,
@@ -49,17 +50,17 @@ class WebDavAdapter extends BaseAdapter {
    * @param {string=} targetDir
    * @returns {Promise.<boolean>}
    */
-  exists(filename, targetDir = this.pathPrefix) {
+  exists (filename, targetDir = this.pathPrefix) {
     return new Promise((resolve, reject) => {
       const filePath = path.join(targetDir, filename);
       if (!filePath.startsWith(this.pathPrefix)) {
         reject(new Error(`Can not check files outside of ${this.pathPrefix}: ${filePath}`));
-        return
+        return;
       }
       this.client
         .stat(filePath)
         .then(() => resolve(true))
-        .catch(() => resolve(false))
+        .catch(() => resolve(false));
     });
   }
 
@@ -68,16 +69,16 @@ class WebDavAdapter extends BaseAdapter {
    * @param {string} targetDir
    * @private
    */
-  ensureDir_(targetDir) {
+  ensureDir_ (targetDir) {
     const directories = path.relative(this.pathPrefix, targetDir).split(path.sep);
     const self = this;
     let dirPath = this.pathPrefix;
     return new Promise((resolve, reject) => {
       if (!targetDir.startsWith(this.pathPrefix)) {
         reject(new Error(`Can not create directories outside of ${this.pathPrefix}: ${targetDir}`));
-        return
+        return;
       }
-      (function loop() {
+      (function loop () {
         if (directories.length) {
           dirPath = path.join(dirPath, directories.shift());
           self.exists(dirPath, '/')
@@ -87,7 +88,7 @@ class WebDavAdapter extends BaseAdapter {
         } else {
           resolve();
         }
-      })()
+      })();
     });
   }
 
@@ -97,16 +98,16 @@ class WebDavAdapter extends BaseAdapter {
    * @param {string=} targetDir
    * @returns {Promise.<*>}
    */
-  save(image, targetDir = this.getTargetDir()) {
-    targetDir = path.join(this.pathPrefix, targetDir);
+  save (image, targetDir = this.getTargetDir()) {
+    const dirPath = path.join(this.pathPrefix, targetDir);
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.getUniqueFileName(image, targetDir),
+        this.getUniqueFileName(image, dirPath),
         readFileAsync(image.path),
-        this.ensureDir_(targetDir)
+        this.ensureDir_(dirPath)
       ]).then(([filename, data]) => {
-        this.client.putFileContents(filename, data) && resolve(path.join(path.sep, path.relative(this.pathPrefix, filename)))
-      }).catch((error) => reject(error))
+        this.client.putFileContents(filename, data) && resolve(path.join(path.sep, path.relative(this.pathPrefix, filename)));
+      }).catch((error) => reject(error));
     });
   }
 
@@ -114,16 +115,16 @@ class WebDavAdapter extends BaseAdapter {
    *
    * @returns {function(*, *, *)}
    */
-  serve() {
+  serve () {
     return (req, res, next) => {
       this.client
         .createReadStream(path.join(this.pathPrefix, req.path))
         .on('error', (error) => {
           res.status(404);
-          next(error)
+          next(error);
         })
-        .pipe(res)
-    }
+        .pipe(res);
+    };
   }
 
   /**
@@ -132,12 +133,12 @@ class WebDavAdapter extends BaseAdapter {
    * @param {string=} targetDir
    * @returns {Promise.<boolean>}
    */
-  delete(filename, targetDir = this.getTargetDir()) {
+  delete (filename, targetDir = this.getTargetDir()) {
     return new Promise((resolve) => {
       this.client
         .deleteFile(path.join(this.pathPrefix, targetDir, filename))
         .then(() => resolve(true))
-        .catch(() => resolve(false))
+        .catch(() => resolve(false));
     });
   }
 
@@ -146,15 +147,15 @@ class WebDavAdapter extends BaseAdapter {
    * @param {ReadOptions} options
    * @returns {Promise.<*>}
    */
-  read(options = {}) {
+  read (options = {}) {
     options.path = stripTrailingSlash(options.path || '');
     options.path = path.join(this.pathPrefix, options.path);
     return new Promise((resolve, reject) => {
       this.client
         .getFileContents(options.path, options)
         .then((buffer) => resolve(buffer))
-        .catch((error) => reject(error))
-    })
+        .catch((error) => reject(error));
+    });
   }
 }
 

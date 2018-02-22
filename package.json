@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel ./src/index.js --out-file ./dist/index.js",
-    "lint": "eslint ./src",
+    "lint": "./node_modules/.bin/eslint ./src",
     "test": "exit 0"
   },
   "repository": {
@@ -35,7 +35,8 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1"
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.18.1"
   },
   "babel": {
     "plugins": [],
