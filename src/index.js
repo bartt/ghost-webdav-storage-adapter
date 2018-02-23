@@ -100,7 +100,7 @@ class WebDavAdapter extends BaseAdapter {
    * @param {string=} targetDir
    * @returns {Promise.<*>}
    */
-  save (image, targetDir = this.getTargetDir()) {
+  save(image, targetDir = this.getTargetDir()) {
     const dirPath = path.join(this.pathPrefix, targetDir);
     return new Promise((resolve, reject) => {
       Promise.all([
@@ -108,8 +108,11 @@ class WebDavAdapter extends BaseAdapter {
         readFileAsync(image.path),
         this.ensureDir_(dirPath)
       ]).then(([filename, data]) => {
-        this.client.putFileContents(filename, data) &&
-          resolve(path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename)))
+        this.client
+          .putFileContents(filename, data)
+          .then(() => {
+            resolve(path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename)))
+          })
       }).catch((error) => reject(error))
     });
   }
