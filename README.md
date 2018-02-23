@@ -9,8 +9,8 @@ A WebDAV storage adapter for the [Ghost](https://ghost.org/) publishing platform
 
 ```shell
 npm install ghost-webdav-storage-adapter
-mkdir -p ./content/adapters/storage
-cp -r ./node_modules/ghost-webdav-storage-adapter/dist ./content/adapters/storage/webdav
+mkdir -p ./content/adapters/storage/webdav
+cp -v ./node_modules/ghost-webdav-storage-adapter/dist/*.js ./content/adapters/storage/webdav
 
 ``````
 
@@ -29,6 +29,8 @@ cp -r ./node_modules/ghost-webdav-storage-adapter/dist ./content/adapters/storag
   }
 }
 ```
+
+NOTE: `username`, `password` and `pathPrefix` are all optional.
 
 ### Via environment variables
 
