@@ -16,6 +16,8 @@ cp -v ./node_modules/ghost-webdav-storage-adapter/dist/*.js ./content/adapters/s
 
 ## Configuration
 
+Configure the WebDAV storage adapter by adding the following lines to the [Ghost config](https://docs.ghost.org/docs/config) file.
+
 ```json
 {
   "storage": {
@@ -33,7 +35,15 @@ cp -v ./node_modules/ghost-webdav-storage-adapter/dist/*.js ./content/adapters/s
 
 NOTE: `username`, `password`, `pathPrefix` and `storagePathPrefix` are all optional.
 
+The `username` and `password` configuration parameters are used in the [Basic Auth](https://tools.ietf.org/html/rfc2617) access authentication on the WebDAV server.
+
+Use a `pathPrefix` if you prefer to limit access to the WebDAV server to a subtree. E.g. with a `pathPrefix` of `/ghost` all files will be stored under `/ghost` and the adapter won't allow access to anything on the WebDAV server outside of `/ghost.
+
+This adapter returns relative URLs for uploaded files. Requests to retrieve the file will be handled by Ghost as if they are stored on a local file system. This requires the returned URLs to start with the same prefix as Ghost's local storage adapter: `/content/images`. This is the default value for `storagePathPrefix` but you can provide a different prefix. Don't forget to create a Ghost route that routes requests for the prefix to the images store.
+ 
 ### Via environment variables
+
+Alternatively, you can configure the WebDAV storage adapter by setting the following environment variables: 
 
 ```
 WEBDAV_SERVER_URL
