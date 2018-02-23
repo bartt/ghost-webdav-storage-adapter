@@ -24,13 +24,14 @@ cp -v ./node_modules/ghost-webdav-storage-adapter/dist/*.js ./content/adapters/s
       "url": "URL_TO_YOUR_WEBDAV_SERVER",
       "username": "YOUR_WEBDAV_USERNAME",
       "password": "YOUR_WEBDAV_PASSWORD",
-      "pathPrefix": "YOUR_PATH_PREFIX"
+      "pathPrefix": "YOUR_PATH_PREFIX",
+      "storagePathPrefix": "YOUR_STORAGE_PATH_PREFIX"
     }
   }
 }
 ```
 
-NOTE: `username`, `password` and `pathPrefix` are all optional.
+NOTE: `username`, `password`, `pathPrefix` and `storagePathPrefix` are all optional.
 
 ### Via environment variables
 
@@ -39,6 +40,7 @@ WEBDAV_SERVER_URL
 WEBDAV_USERNAME // optional
 WEBDAV_PASSWORD // optional
 WEBDAV_PATH_PREFIX // optional
+WEBDAV_STORAGE_PATH_PREFIX // optional
 ```
 
 ## License

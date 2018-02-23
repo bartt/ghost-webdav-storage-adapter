@@ -12,7 +12,8 @@ const process = require('process');
  * @property {string} url The remote address of the WebDAV server
  * @property {string=} username Optional username for authentication
  * @property {string=} password Optional password for authentication
- * @property  {string=} pathPrefix Optional path to the root of WebDAV storage
+ * @property {string=} pathPrefix Optional path to the root of WebDAV storage
+ * @property {string=} storagePathPrefix Optional URL path that routes request to this storage adapter
  */
 
 /**
@@ -42,6 +43,7 @@ class WebDavAdapter extends BaseAdapter {
       config.password || process.env.WEBDAV_PASSWORD
     );
     this.pathPrefix = config.pathPrefix || process.env.WEBDAV_PATH_PREFIX || '';
+    this.storagePathPrefix = config.storagePathPrefix || process.env.WEBDAV_STORAGE_PATH_PREFIX || '/content/images';
   }
 
   /**
@@ -106,8 +108,9 @@ class WebDavAdapter extends BaseAdapter {
         readFileAsync(image.path),
         this.ensureDir_(dirPath)
       ]).then(([filename, data]) => {
-        this.client.putFileContents(filename, data) && resolve(path.join(path.sep, path.relative(this.pathPrefix, filename)));
-      }).catch((error) => reject(error));
+        this.client.putFileContents(filename, data) &&
+          resolve(path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename)))
+      }).catch((error) => reject(error))
     });
   }
 
