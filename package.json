@@ -1,6 +1,6 @@
 {
   "name": "ghost-webdav-storage-adapter",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A WebDAV storage adapter for the Ghost publishing platform",
   "main": "dist/index.js",
   "scripts": {

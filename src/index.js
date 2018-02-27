@@ -1,5 +1,6 @@
 'use strict';
 
+const Buffer = require('buffer');
 const BaseAdapter = require('ghost-storage-base');
 const Promise = require('bluebird');
 const createClient = require('webdav');
@@ -162,16 +163,16 @@ class WebDavAdapter extends BaseAdapter {
    */
   delete (filename, targetDir = this.getTargetDir()) {
     return new Promise((resolve) => {
-      const filename = path.join(this.pathPrefix, targetDir, filename);
-      debug(`delete - ${filename}`);
+      const filePath = path.join(this.pathPrefix, targetDir, filename);
+      debug(`delete - ${filePath}`);
       this.client
-        .deleteFile(filename)
+        .deleteFile(filePath)
         .then(() => {
-          debug(`delete - ${filename}: true`);
+          debug(`delete - ${filePath}: true`);
           resolve(true)
         })
         .catch(() => {
-          debug(`delete - ${filename}: false`);
+          debug(`delete - ${filePath}: false`);
           resolve(false)
         });
     });
@@ -189,10 +190,13 @@ class WebDavAdapter extends BaseAdapter {
       debug(`read - ${JSON.stringify(options)}`);
       this.client
         .getFileContents(options.path, options)
-        .then((buffer) => {
+        .then((arrayBuffer) => {
+          const buffer = Buffer.from(arrayBuffer);
           if (debug.enabled) {
             const tmpPath = `/tmp/${path.basename(options.path)}`;
-            fs.writeFile(`${tmpPath}`, buffer, () => {});
+            fs.writeFile(`${tmpPath}`, buffer, () => {
+              // Do nothing
+            });
             debug(`read - ${JSON.stringify(options)}: ${tmpPath} - ${buffer.byteLength} bytes`);
           }
           resolve(buffer)
