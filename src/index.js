@@ -3,6 +3,7 @@
 const BaseAdapter = require('ghost-storage-base');
 const Promise = require('bluebird');
 const createClient = require('webdav');
+const debug = require('debug')('webdav');
 const fs = require('fs');
 const path = require('path');
 const process = require('process');
@@ -55,14 +56,21 @@ class WebDavAdapter extends BaseAdapter {
   exists (filename, targetDir = this.pathPrefix) {
     return new Promise((resolve, reject) => {
       const filePath = path.join(targetDir, filename);
+      debug(`exists - ${filePath}`);
       if (!filePath.startsWith(this.pathPrefix)) {
         reject(new Error(`Can not check files outside of ${this.pathPrefix}: ${filePath}`));
         return;
       }
       this.client
         .stat(filePath)
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
+        .then(() => {
+          debug(`exists - ${filePath}: true`);
+          resolve(true)
+        })
+        .catch(() => {
+          debug(`exists - ${filePath}: false`);
+          resolve(false)
+        });
     });
   }
 
@@ -75,6 +83,7 @@ class WebDavAdapter extends BaseAdapter {
     const directories = path.relative(this.pathPrefix, targetDir).split(path.sep);
     const self = this;
     let dirPath = this.pathPrefix;
+    debug(`ensureDir_ - ${targetDir} - ${directories}`);
     return new Promise((resolve, reject) => {
       if (!targetDir.startsWith(this.pathPrefix)) {
         reject(new Error(`Can not create directories outside of ${this.pathPrefix}: ${targetDir}`));
@@ -86,7 +95,10 @@ class WebDavAdapter extends BaseAdapter {
           self.exists(dirPath, '/')
             .then((exists) => exists || self.client.createDirectory(dirPath))
             .then(loop)
-            .catch((error) => reject(error));
+            .catch((error) => {
+              debug(`ensureDir_ - ${dirPath}: ${error}`);
+              reject(error)
+            });
         } else {
           resolve();
         }
@@ -102,6 +114,7 @@ class WebDavAdapter extends BaseAdapter {
    */
   save(image, targetDir = this.getTargetDir()) {
     const dirPath = path.join(this.pathPrefix, targetDir);
+    debug(`save - ${dirPath} - ${JSON.stringify(image)}`);
     return new Promise((resolve, reject) => {
       Promise.all([
         this.getUniqueFileName(image, dirPath),
@@ -111,9 +124,14 @@ class WebDavAdapter extends BaseAdapter {
         this.client
           .putFileContents(filename, data)
           .then(() => {
-            resolve(path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename)))
+            const uri = path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename));
+            debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${uri}`);
+            resolve(uri)
           })
-      }).catch((error) => reject(error))
+      }).catch((error) => {
+        debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${error}`);
+        reject(error)
+      })
     });
   }
 
@@ -123,9 +141,12 @@ class WebDavAdapter extends BaseAdapter {
    */
   serve () {
     return (req, res, next) => {
+      const filename = path.join(this.pathPrefix, req.path);
+      debug(`serve - ${filename}`);
       this.client
-        .createReadStream(path.join(this.pathPrefix, req.path))
+        .createReadStream(filename)
         .on('error', (error) => {
+          debug(`serve - ${filename}: ${error}`);
           res.status(404);
           next(error);
         })
@@ -141,10 +162,18 @@ class WebDavAdapter extends BaseAdapter {
    */
   delete (filename, targetDir = this.getTargetDir()) {
     return new Promise((resolve) => {
+      const filename = path.join(this.pathPrefix, targetDir, filename);
+      debug(`delete - ${filename}`);
       this.client
-        .deleteFile(path.join(this.pathPrefix, targetDir, filename))
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
+        .deleteFile(filename)
+        .then(() => {
+          debug(`delete - ${filename}: true`);
+          resolve(true)
+        })
+        .catch(() => {
+          debug(`delete - ${filename}: false`);
+          resolve(false)
+        });
     });
   }
 
@@ -157,10 +186,21 @@ class WebDavAdapter extends BaseAdapter {
     options.path = stripTrailingSlash(options.path || '');
     options.path = path.join(this.pathPrefix, options.path);
     return new Promise((resolve, reject) => {
+      debug(`read - ${JSON.stringify(options)}`);
       this.client
         .getFileContents(options.path, options)
-        .then((buffer) => resolve(buffer))
-        .catch((error) => reject(error));
+        .then((buffer) => {
+          if (debug.enabled) {
+            const tmpPath = `/tmp/${path.basename(options.path)}`;
+            fs.writeFile(`${tmpPath}`, buffer, () => {});
+            debug(`read - ${JSON.stringify(options)}: ${tmpPath} - ${buffer.byteLength} bytes`);
+          }
+          resolve(buffer)
+        })
+        .catch((error) => {
+          debug(`read - ${JSON.stringify(options)}: ${error}`);
+          reject(error)
+        });
     });
   }
 }
