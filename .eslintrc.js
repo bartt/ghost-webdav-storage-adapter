@@ -230,7 +230,7 @@ module.exports = {
     'padding-line-between-statements': 'error',
     'prefer-arrow-callback': 'error',
     'prefer-const': 'error',
-    'prefer-destructuring': 'error',
+    'prefer-destructuring': 'off',
     'prefer-numeric-literals': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-reflect': 'error',
