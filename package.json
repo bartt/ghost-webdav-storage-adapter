@@ -23,6 +23,7 @@
     "email": "bart@thecodemill.biz",
     "url": "https://thecodemill.biz"
   },
+  "contributors": [],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/bartt/ghost-webdav-storage-adapter/issues"
