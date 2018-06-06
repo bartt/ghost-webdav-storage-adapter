@@ -40,12 +40,12 @@ class WebDavAdapter extends BaseAdapter {
       throw new Error('A URL to the WebDAV server is required.');
     }
     this.client = createClient(
-      config.url || process.env.WEBDAV_SERVER_URL,
-      config.username || process.env.WEBDAV_USERNAME,
-      config.password || process.env.WEBDAV_PASSWORD
+      process.env.WEBDAV_SERVER_URL || config.url,
+      process.env.WEBDAV_USERNAME || config.username,
+      process.env.WEBDAV_PASSWORD || config.password
     );
-    this.pathPrefix = config.pathPrefix || process.env.WEBDAV_PATH_PREFIX || '';
-    this.storagePathPrefix = config.storagePathPrefix || process.env.WEBDAV_STORAGE_PATH_PREFIX || '/content/images';
+    this.pathPrefix = process.env.WEBDAV_PATH_PREFIX || config.pathPrefix || '';
+    this.storagePathPrefix = process.env.WEBDAV_STORAGE_PATH_PREFIX || config.storagePathPrefix || '/content/images';
   }
 
   /**
