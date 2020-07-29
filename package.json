@@ -1,6 +1,6 @@
 {
   "name": "ghost-webdav-storage-adapter",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "A WebDAV storage adapter for the Ghost publishing platform",
   "main": "dist/index.js",
   "scripts": {
@@ -30,15 +30,15 @@
   },
   "homepage": "https://github.com/bartt/ghost-webdav-storage-adapter#readme",
   "dependencies": {
-    "bluebird": "^3.5.1",
-    "debug": "^3.1.0",
-    "ghost-storage-base": "0.0.1",
-    "webdav": "^1.1.1"
+    "bluebird": "^3.7.2",
+    "debug": "^4.2.0",
+    "ghost-storage-base": "0.0.5",
+    "webdav": "^3.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "eslint": "^4.18.1"
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^7.5.0"
   },
   "babel": {
     "plugins": [],

@@ -1,9 +1,9 @@
 'use strict';
 
+const { createClient } = require('webdav');
 const Buffer = require('buffer').Buffer;
 const BaseAdapter = require('ghost-storage-base');
 const Promise = require('bluebird');
-const createClient = require('webdav');
 const debug = require('debug')('webdav');
 const fs = require('fs');
 const path = require('path');
@@ -41,8 +41,10 @@ class WebDavAdapter extends BaseAdapter {
     }
     this.client = createClient(
       process.env.WEBDAV_SERVER_URL || config.url,
-      process.env.WEBDAV_USERNAME || config.username,
-      process.env.WEBDAV_PASSWORD || config.password
+      {
+        'password': process.env.WEBDAV_PASSWORD || config.password,
+        'username': process.env.WEBDAV_USERNAME || config.username
+      }
     );
     this.pathPrefix = process.env.WEBDAV_PATH_PREFIX || config.pathPrefix || '';
     this.storagePathPrefix = process.env.WEBDAV_STORAGE_PATH_PREFIX || config.storagePathPrefix || '/content/images';
