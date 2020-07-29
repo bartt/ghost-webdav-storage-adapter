@@ -1,6 +1,6 @@
 # WebDAV storage adapter for Ghost
 
-A WebDAV storage adapter for the [Ghost](https://ghost.org/) publishing platform 1.x
+A WebDAV storage adapter for the [Ghost](https://ghost.org/) publishing platform 3.x
 
 [![npm Version][npm-image]][npm-url] [![npm Downloads][downloads-image]][downloads-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][david-image]][david-url] [![Open Issues][issues-image]][issues-url]
 
