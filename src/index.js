@@ -77,10 +77,11 @@ class WebDavAdapter extends BaseAdapter {
 
   /**
    *
-   * @param {string} targetDir
+   * @param {string} targetPath
    * @private
    */
-  ensureDir_ (targetDir) {
+  ensureDir_ (targetPath) {
+    const targetDir = path.dirname(targetPath);
     const directories = path.relative(this.pathPrefix, targetDir).split(path.sep);
     const self = this;
     let dirPath = this.pathPrefix;
@@ -118,22 +119,50 @@ class WebDavAdapter extends BaseAdapter {
     debug(`save - ${dirPath} - ${JSON.stringify(image)}`);
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.getUniqueFileName(image, dirPath),
         readFileAsync(image.path),
-        this.ensureDir_(dirPath)
-      ]).then(([filename, data]) => {
-        this.client
-          .putFileContents(filename, data)
-          .then(() => {
-            const uri = path.join(this.storagePathPrefix, path.relative(this.pathPrefix, filename));
-            debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${uri}`);
-            resolve(uri)
-          })
-      }).catch((error) => {
+        this.getUniqueFileName(image, dirPath)
+      ])
+      .then(([data, filename]) => this.saveRaw(data, filename))
+      .then((uri) => {
+        debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${uri}`);
+        resolve(uri)
+      })
+      .catch((error) => {
         debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${error}`);
         reject(error)
       })
     });
+  }
+
+  /**
+   * Write the image to storage, ensuring that the path to the image stats with the
+   * prefix and that the target directory exists. The existance of `saveRaw` enables
+   *  Ghost's automatic responsive images.
+   *
+   * @param {*} data
+   * @param {string} targetPath
+   * @returns {Promise.<string>}
+   * @memberof WebDavAdapter
+   */
+  saveRaw(data, targetPath) {
+    debug(`saveRaw - ${JSON.stringify(this)} - ${targetPath}`);
+    if (!targetPath.startsWith(this.pathPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      targetPath = path.join(this.pathPrefix, targetPath);
+    }
+    return new Promise((resolve, reject) => {
+      this.ensureDir_(targetPath)
+      .then(() => this.client.putFileContents(targetPath, data))
+      .then(() => {
+        const uri = path.join(this.storagePathPrefix, path.relative(this.pathPrefix, targetPath));
+        debug(`saveRaw - ${targetPath}: ${uri}`);
+        resolve(uri)
+      })
+      .error((error) => {
+        debug(`saveRaw - ${targetPath}: ${error}`);
+        reject(error)
+      })
+    })
   }
 
   /**
