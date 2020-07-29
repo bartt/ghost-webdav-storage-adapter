@@ -1,6 +1,6 @@
 'use strict';
 
-const { createClient } = require('webdav');
+const {createClient} = require('webdav');
 const Buffer = require('buffer').Buffer;
 const BaseAdapter = require('ghost-storage-base');
 const Promise = require('bluebird');
