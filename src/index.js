@@ -139,7 +139,7 @@ class WebDavAdapter extends BaseAdapter {
   /**
    * Write the image to storage, ensuring that the path to the image stats with the
    * prefix and that the target directory exists. The existence of `saveRaw` enables
-   *  Ghost's automatic responsive images.
+   * Ghost's automatic responsive images.
    *
    * @param {*} data
    * @param {string} targetPath
