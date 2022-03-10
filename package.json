@@ -31,14 +31,14 @@
   "homepage": "https://github.com/bartt/ghost-webdav-storage-adapter#readme",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "debug": "^4.2.0",
-    "ghost-storage-base": "0.0.5",
-    "webdav": "^3.3.0"
+    "debug": "^4.3.3",
+    "ghost-storage-base": "1.0.0",
+    "webdav": "^4.8.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "eslint": "^7.5.0"
+    "@babel/cli": "^7.17.6",
+    "@babel/preset-env": "^7.16.11",
+    "eslint": "^8.10.0"
   },
   "babel": {
     "plugins": [],
